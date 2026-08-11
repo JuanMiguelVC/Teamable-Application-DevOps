@@ -34,7 +34,8 @@ RUN npm ci --omit=dev
 
 # Copiamos el código del backend de Node.js
 # (Ajusta "./server" si tu código backend está en otra carpeta, o usa "." si está en la raíz)
-COPY --from=builder /app/server ./server 
+COPY --from=builder /app/server.js ./server.js
+COPY --from=builder /app/validator.js ./validator.js
 
 # Copiamos los archivos estáticos compilados de Vue.js
 # (Ajusta "./dist" según la carpeta de salida de tu build de Vue)
