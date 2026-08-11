@@ -1,0 +1,7 @@
+# Ignore node modules folder and build artifacts
+node_modules
+dist
+teamable-*.tgz
+
+# VSCode settings folder
+.vscode
