@@ -5,17 +5,17 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copiamos los manifiestos de dependencias
+# 1. Copiamos manifiestos y dependencias
 COPY package*.json ./
 
-# Instalamos TODAS las dependencias (necesarias para compilar Vue)
-RUN npm install
+# 2. Instalamos TODAS las dependencias (incluyendo devDependencies para Vue y Jest)
+RUN npm ci
 
-# Copiamos todo el código fuente (HTML, CSS, JS, Vue, Node)
+# 3. Copiamos todo el código fuente
 COPY . .
 
-# Compilamos el frontend de Vue.js (genera la carpeta dist/ o build/ con HTML/CSS/JS estático)
-# Nota: Asegúrate de que este comando coincide con el de tu package.json
+# 4. Compilamos el frontend de Vue.js
+# Esto normalmente toma src/ e index.html y genera una carpeta dist/
 RUN npm run build 
 
 # ==========================================
@@ -25,30 +25,29 @@ FROM node:20-alpine AS production
 
 WORKDIR /app
 
-# Añadimos usuario no privilegiado por seguridad
+# 5. Seguridad: Creamos usuario no privilegiado
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
-# Copiamos manifiestos e instalamos SOLO dependencias de producción para Node.js
+# 6. Copiamos manifiestos e instalamos SOLO dependencias de producción
 COPY package*.json ./
 RUN npm ci --omit=dev
 
-# Copiamos el código del backend de Node.js
-# (Ajusta "./server" si tu código backend está en otra carpeta, o usa "." si está en la raíz)
-COPY --from=builder /app/server.js ./server.js
-COPY --from=builder /app/validator.js ./validator.js
+# 7. Copiamos los archivos exactos del backend desde la raíz
+COPY --from=builder /app/server.js ./
+COPY --from=builder /app/validator.js ./
 
-# Copiamos los archivos estáticos compilados de Vue.js
-# (Ajusta "./dist" según la carpeta de salida de tu build de Vue)
+# 8. Copiamos los estáticos generados por Vue.js
+# Nota: Si tu build genera la carpeta con otro nombre (como 'build'), cámbialo aquí.
 COPY --from=builder /app/dist ./dist 
 
-# Configuramos variables de entorno por defecto
+# 9. Configuramos el entorno
 ENV NODE_ENV=production
 ENV PORT=3000
 
-# Cambiamos al usuario seguro
+# 10. Cambiamos al usuario seguro
 USER appuser
 
 EXPOSE 3000
 
-# Comando para arrancar el servidor Node.js
+# 11. Arrancamos la aplicación
 CMD ["npm", "start"]
