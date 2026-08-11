@@ -1,0 +1,9 @@
+.git
+.gitignore
+.env
+Dockerfile
+.github
+node_modules
+target
+__pycache__
+*.log
