@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  # Databse container
+  mongodb:
+    image: mongo:8.3.11-noble
+    container_name: teamable-db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db # Data persistence for MongoDB
+
+# Teamable application container
+  teamable:
+    build: .
+    container_name: teamable-app
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/teamable_db
+      - PORT=3000
+    depends_on:
+      - mongodb
+
+# Volumes for data persistence
+volumes:
+  mongodb_data:
