@@ -5,12 +5,15 @@ const bodyParser = require('body-parser')
 const { MongoClient } = require('mongodb')
 const { isInvalidEmail, isEmptyPayload } = require('./validator')
 
-// Create constants for environment variables and check if the app is in development mode
-const { DB_USER, DB_PASS, DEV } = process.env
-console.log(DEV)
+// 1. Add DB_ADDRESS and PORT to the process.env destructuring
+const { DB_USER, DB_PASS, DEV, DB_ADDRESS, PORT } = process.env
+console.log('Modo DEV:', DEV)
 
-// Create a new MongoClient
-const dbAddress = '127.0.0.1:27017'
+// 2. We evaluate the address dynamically. 
+// If Docker injects DB_ADDRESS, we use it. If we run locally without Docker, we use 127.0.0.1 by default.
+const dbAddress = DB_ADDRESS || '127.0.0.1:27017'
+
+// The original connection logic remains intact
 const url = DEV ? `mongodb://${dbAddress}` : `mongodb://${DB_USER}:${DB_PASS}@${dbAddress}?authSource=company_db`
 const client = new MongoClient(url)
 const dbName = 'company_db'
@@ -52,7 +55,7 @@ app.post('/update-profile', async function (req, res) {
     console.log(payload)
 
     if (isEmptyPayload(payload) || isInvalidEmail(payload)) {
-        res.send({ error: "Payload is empty. User profile was not updated successfully" })
+        res.send({ error: "Payload is empty. User profile was not updated succesfully" })
     } else {
         // connect to mongodb database
         await client.connect()
@@ -72,9 +75,10 @@ app.post('/update-profile', async function (req, res) {
     }
 })
 
-// Checking that the application is running on port 3000
-const server = app.listen(3000, function () {
-    console.log("app listening on port 3000")
+// Checking that the application is running on configured port
+const serverPort = PORT || 3000
+const server = app.listen(serverPort, function () {
+    console.log(`app listening on port ${serverPort}`)
 })
 
 // Exporting the app and server for testing purposes
