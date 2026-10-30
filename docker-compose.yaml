@@ -17,7 +17,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - MONGO_URI=mongodb://mongodb:27017/teamable_db
+      - DB_ADDRESS=mongodb:27017
       - DEV=true
       - PORT=3000
     depends_on:
