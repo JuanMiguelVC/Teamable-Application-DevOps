@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   # Databse container
@@ -10,7 +10,7 @@ services:
     volumes:
       - mongodb_data:/data/db # Data persistence for MongoDB
 
-# Teamable application container
+  # Teamable application container
   teamable:
     build: .
     container_name: teamable-app
