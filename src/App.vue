@@ -36,7 +36,7 @@ export default {
             isEditMode: false
         }
     },
-    async created(){
+    async created() {
         const userData = await this.fetchUserProfile()
         this.name = userData.name
         this.email = userData.email
@@ -44,28 +44,28 @@ export default {
     },
     methods: {
         handleEditProfile() { this.isEditMode = true },
-        async handleUpdateProfile() { 
-            const payload ={
+        async handleUpdateProfile() {
+            const payload = {
                 name: this.name,
                 email: this.email,
                 interests: this.interests
             }
-            const responseJSON = await this.updateUserProfie(payload)
+            const responseJSON = await this.updateUserProfile(payload)
             console.log(responseJSON)
-            this.isEditMode = false 
+            this.isEditMode = false
         },
-        async fetchUserProfile(){
+        async fetchUserProfile() {
             const response = await fetch("get-profile")
             return await response.json()
         },
-        async updateUserProfie(payload){
-            const response=await fetch("update-profile",{
+        async updateUserProfile(payload) {
+            const response = await fetch("update-profile", {
                 method: "POST",
-                headers:{
-                    "Content-Type":"application/json",
-                    "Accept":"application/json"
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
                 },
-                body:JSON.stringify(payload)
+                body: JSON.stringify(payload)
             })
             return await response.json()
         }
